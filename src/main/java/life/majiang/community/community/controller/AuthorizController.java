@@ -2,12 +2,22 @@ package life.majiang.community.community.controller;
 
 import life.majiang.community.community.dto.AccessTokenDTO;
 import life.majiang.community.community.dto.GithubUser;
+import life.majiang.community.community.mapper.UserMapper;
+import life.majiang.community.community.model.User;
 import life.majiang.community.community.provider.GithubProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.UUID;
+
 //血泪史啊,这里忘记加Controller了,导致一直没有授权,心痛啊啊啊
 @Controller
 public class AuthorizController {
@@ -22,9 +32,14 @@ public class AuthorizController {
     @Value("${github.redirect.uri}")
     private String redirectUri;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @GetMapping("/callback")
     public String callback(@RequestParam(name ="code") String code,
-                           @RequestParam(name ="state") String state){
+                           @RequestParam(name ="state") String state,
+                           HttpServletRequest request,
+                           HttpServletResponse response){
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(clientSecret);
@@ -32,9 +47,24 @@ public class AuthorizController {
         accessTokenDTO.setRedirect_uri(redirectUri);
         accessTokenDTO.setState(state);
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
-        GithubUser user = githubProvider.getUser(accessToken);
-        System.out.print(user.getName());
-        return "index";
+        GithubUser githubUser = githubProvider.getUser(accessToken);
+        if(githubUser != null){
+            // 登录成功，写cookie和session
+            User user = new User();//获取用户信息
+            String token = UUID.randomUUID().toString();//生成token
+            user.setToken(token);//token放入User对象中，并存入数据库
+            user.setName(githubUser.getName());
+            user.setAccountId(String.valueOf(githubUser.getId()));
+            user.setGmtCreate(System.currentTimeMillis());
+            user.setGmtModified(user.getGmtCreate());
+            userMapper.insert(user);
+            response.addCookie(new Cookie("token",token));//把token放入cookie里面
+            return "redirect:/";
+        }else{
+            // 登录失败
+            return "redirect:/";
+        }
+
     }
 }
 //ctrl alt + v 快速new一个实例

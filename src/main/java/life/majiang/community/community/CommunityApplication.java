@@ -1,9 +1,13 @@
 package life.majiang.community.community;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
-@SpringBootApplication//SpringBoot程序的启动类
+
+@SpringBootApplication
 public class CommunityApplication {
 
     public static void main(String[] args) {
