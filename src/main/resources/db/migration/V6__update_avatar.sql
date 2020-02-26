@@ -1,0 +1,1 @@
+update user set AVATAR_URL='https://avatars0.githubusercontent.com/u/42770813?v=4' where ID=33;

@@ -1,0 +1,1 @@
+update user set NAME='hello' where ID=1;
