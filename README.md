@@ -9,6 +9,14 @@
 ### 步骤
 - yum update
 - yum install git
+- mkdir App
+- cd App
+- git clone https://github.com/ZuofromCN/community.git
+- yum install maven
+- mvn -v
+- mvn compile package
+- cp src/main/resources/application.properties src/main/resources/application-production.properties
+- vim src/main/resources/application-production.properties
 
 
 ## 资料
