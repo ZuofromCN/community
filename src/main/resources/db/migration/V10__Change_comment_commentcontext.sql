@@ -1,0 +1,1 @@
+ALTER TABLE comment CHANGE comment_context content VARCHAR(256);
