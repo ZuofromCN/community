@@ -6,6 +6,7 @@ import life.majiang.community.community.mapper.UserMapper;
 import life.majiang.community.community.model.User;
 import life.majiang.community.community.provider.GithubProvider;
 import life.majiang.community.community.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 //血泪史啊,这里忘记加Controller了,导致一直没有授权,心痛啊啊啊
 @Controller
+@Slf4j
 public class AuthorizController {
 
     @Autowired
@@ -62,6 +64,7 @@ public class AuthorizController {
             response.addCookie(new Cookie("token",token));//把token放入cookie里
             return "redirect:/";
         }else{
+            log.error("callback get github error,{}",githubUser);
             // 登录失败
             return "redirect:/";
         }
